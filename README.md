@@ -2,6 +2,7 @@ Create local k8s cluster with kind
 ```
 kind create cluster
 ```
+
 Install metrics-server to it (without it HPA will not work)
 ```
 helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
@@ -12,6 +13,11 @@ helm upgrade --install --set args={--kubelet-insecure-tls} metrics-server metric
 Build this sample app
 ```
 /mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=isopov/k8stest
+```
+
+Load image built into kluster
+```
+kind load docker-image isopov/k8stest
 ```
 
 Deploy to k8s cluster
