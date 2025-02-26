@@ -29,14 +29,23 @@ kubectl run postgresql-client --rm --tty -i --restart='Never' --namespace postgr
         --image docker.io/bitnami/postgresql:17.4.0-debian-12-r2 --env="PGPASSWORD=k8stest" \
         --command -- psql --host postgresql -U k8stest -d k8stest -p 5432
 ```
+Install redis
+```
+helm install --namespace=redis --create-namespace redis bitnami/redis
+export REDIS_PASSWORD=$(kubectl get secret --namespace redis redis -o jsonpath="{.data.redis-password}" | base64 -d)
+kubectl run --namespace redis redis-client --restart='Never'  --env REDIS_PASSWORD=$REDIS_PASSWORD  --image docker.io/bitnami/redis:7.4.2-debian-12-r4 --command -- sleep infinity
+kubectl exec --tty -i redis-client --namespace redis -- bash
+REDISCLI_AUTH="$REDIS_PASSWORD" redis-cli -h redis-master
+acl setuser k8stest >k8stest on allchannels allkeys +get +set
+```
 Build this sample app
 ```
-/mvnw spring-boot:build-image
+./mvnw spring-boot:build-image
 ```
 
 Load image built into kluster
 ```
-kind load docker-image k8stest:0.1.1
+kind load docker-image k8stest:0.1.2
 ```
 
 Deploy to k8s cluster

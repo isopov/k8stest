@@ -19,7 +19,7 @@ spec:
         app: k8stest
     spec:
       containers:
-      - image: k8stest:0.1.1
+      - image: k8stest:0.1.2
         imagePullPolicy: Never
         name: k8stest
         resources:
