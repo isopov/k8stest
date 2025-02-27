@@ -2,5 +2,5 @@ apiVersion: v2
 name: k8stest
 description: Isopovs test of k8s with helm
 type: application
-version: 0.1.2-1
-appVersion: "0.1.2"
+version: 0.1.3-1
+appVersion: "0.1.3"

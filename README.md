@@ -31,12 +31,7 @@ kubectl run postgresql-client --rm --tty -i --restart='Never' --namespace postgr
 ```
 Install redis
 ```
-helm install --namespace=redis --create-namespace redis bitnami/redis
-export REDIS_PASSWORD=$(kubectl get secret --namespace redis redis -o jsonpath="{.data.redis-password}" | base64 -d)
-kubectl run --namespace redis redis-client --restart='Never'  --env REDIS_PASSWORD=$REDIS_PASSWORD  --image docker.io/bitnami/redis:7.4.2-debian-12-r4 --command -- sleep infinity
-kubectl exec --tty -i redis-client --namespace redis -- bash
-REDISCLI_AUTH="$REDIS_PASSWORD" redis-cli -h redis-master
-acl setuser k8stest >k8stest on allchannels allkeys +get +set
+helm install --namespace=redis --create-namespace redis bitnami/redis --set auth.password=k8stest
 ```
 Build this sample app
 ```
@@ -45,7 +40,7 @@ Build this sample app
 
 Load image built into kluster
 ```
-kind load docker-image k8stest:0.1.2
+kind load docker-image k8stest:0.1.3
 ```
 
 Deploy to k8s cluster
@@ -58,7 +53,7 @@ Or after some changes upgrade to newer version
 helm upgrade --namespace k8stest k8stest charts/k8stest
 ```
 
-Get local ip of the k8s node. Access this app via it http://172.18.0.2:30080/factorial/10
+Get local ip of the k8s node. Access this app via it http://172.18.0.2:30080/load/factorial/10
 ```
 docker inspect kind-control-plane | grep IPAddress
 ```
