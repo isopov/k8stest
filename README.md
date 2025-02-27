@@ -40,7 +40,7 @@ Build this sample app
 
 Load image built into kluster
 ```
-kind load docker-image k8stest:0.1.3
+kind load docker-image k8stest:0.1.4
 ```
 
 Deploy to k8s cluster
