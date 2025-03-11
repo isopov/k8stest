@@ -1,4 +1,4 @@
-package io.github.isopov.k8stest.test;
+package io.github.isopov.k8stest.api;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;

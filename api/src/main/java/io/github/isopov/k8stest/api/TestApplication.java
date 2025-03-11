@@ -1,10 +1,9 @@
-package io.github.isopov.k8stest.test;
+package io.github.isopov.k8stest.api;
 
 import io.github.bucket4j.BandwidthBuilder;
 import io.github.bucket4j.BlockingBucket;
 import io.github.bucket4j.BucketConfiguration;
 import io.github.bucket4j.redis.lettuce.Bucket4jLettuce;
-import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.async.RedisAsyncCommands;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
@@ -22,7 +20,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.time.Duration;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 @SpringBootApplication

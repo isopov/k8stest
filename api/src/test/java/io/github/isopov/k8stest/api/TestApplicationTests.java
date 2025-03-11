@@ -1,4 +1,4 @@
-package io.github.isopov.k8stest.test;
+package io.github.isopov.k8stest.api;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.Test;
@@ -7,13 +7,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 
-import javax.sql.DataSource;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Import(TestContainersConfiguration.class)
 @SpringBootTest
-@TestPropertySource(properties = {"spring.datasource.hikari.maximumPoolSize = 2"})
+@TestPropertySource(properties = {"spring.datasource.hikari.maximumPoolSize = 1"})
 class TestApplicationTests {
 
     @Autowired
@@ -25,7 +23,7 @@ class TestApplicationTests {
 
     @Test
     void datasourceSize() {
-        assertEquals(2, ds.getMaximumPoolSize());
+        assertEquals(1, ds.getMaximumPoolSize());
     }
 
 

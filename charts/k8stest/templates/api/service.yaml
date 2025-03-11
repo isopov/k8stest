@@ -3,8 +3,8 @@ kind: Service
 metadata:
   creationTimestamp: null
   labels:
-    app: k8stest
-  name: k8stest
+    app: k8stest-api
+  name: k8stest-api
   namespace: k8stest
 spec:
   ports:
@@ -13,7 +13,7 @@ spec:
     targetPort: 8080
     nodePort: 30080
   selector:
-    app: k8stest
+    app: k8stest-api
   type: NodePort
 status:
   loadBalancer: {}

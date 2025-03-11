@@ -41,14 +41,9 @@ Get kafka password
 ```
 kubectl get secret kafka-user-passwords --namespace kafka -o jsonpath='{.data.client-passwords}' | base64 -d | cut -d , -f 1
 ```
-Build this sample app
+Build this sample app and upload to local kind cluster
 ```
-./mvnw spring-boot:build-image
-```
-
-Load image built into kluster
-```
-kind load docker-image k8stest:0.1.4
+./build.sh
 ```
 
 Deploy to k8s cluster
