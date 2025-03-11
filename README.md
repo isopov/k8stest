@@ -33,6 +33,14 @@ Install redis
 ```
 helm install --namespace=redis --create-namespace redis bitnami/redis --set auth.password=k8stest
 ```
+Install kafka
+```
+helm install --namespace kafka --create-namespace kafka bitnami/kafka
+```
+Get kafka password
+```
+kubectl get secret kafka-user-passwords --namespace kafka -o jsonpath='{.data.client-passwords}' | base64 -d | cut -d , -f 1
+```
 Build this sample app
 ```
 ./mvnw spring-boot:build-image
