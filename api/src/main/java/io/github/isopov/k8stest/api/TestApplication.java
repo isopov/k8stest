@@ -1,28 +1,20 @@
 package io.github.isopov.k8stest.api;
 
-import io.github.bucket4j.BandwidthBuilder;
-import io.github.bucket4j.BlockingBucket;
-import io.github.bucket4j.BucketConfiguration;
-import io.github.bucket4j.redis.lettuce.Bucket4jLettuce;
-import io.lettuce.core.api.async.RedisAsyncCommands;
+import io.github.isopov.k8stest.core.MessagesService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.time.Duration;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Supplier;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "io.github.isopov.k8stest")
 public class TestApplication {
     public static void main(String[] args) {
         SpringApplication.run(TestApplication.class, args);
@@ -32,64 +24,38 @@ public class TestApplication {
 @RestController
 @RequestMapping("/messages")
 class MessagesController {
-    private final JdbcTemplate template;
-    private BlockingBucket rateLimiter;
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessagesController.class);
 
-    private static final int MESSAGES_RATE_LIMIT = 100;
+    private final MessagesService service;
+    private final KafkaTemplate<String, String> kafkaTemplate;
+
 
     MessagesController(
-            JdbcTemplate template,
-            RedisConnectionFactory redisFactory
+            MessagesService service,
+            KafkaTemplate<String, String> kafkaTemplate
     ) {
-        this.template = template;
-
-        var configuration = BucketConfiguration.builder().addLimit(
-                        BandwidthBuilder.builder()
-                                .capacity(MESSAGES_RATE_LIMIT)
-                                .refillGreedy(MESSAGES_RATE_LIMIT, Duration.ofSeconds(1))
-                                .build()
-                )
-                .build();
-        var commands = (RedisAsyncCommands<byte[], byte[]>) redisFactory.getConnection().getNativeConnection();
-        var manager = Bucket4jLettuce.casBasedBuilder(commands).build();
-        this.rateLimiter = manager.getProxy("messages".getBytes(), () -> configuration).asBlocking();
-
+        this.service = service;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     @PostMapping
     public Integer post(@RequestBody String message) {
-        var keyHolder = new GeneratedKeyHolder();
-        template.update(
-                (Connection con) -> {
-                    var ps = con.prepareStatement("insert into message(value) values(?) returning id",
-                            PreparedStatement.RETURN_GENERATED_KEYS);
-                    ps.setString(1, message);
-                    return ps;
-                }, keyHolder
-        );
-        return keyHolder.getKey().intValue();
+        var id = service.save(message);
+        kafkaTemplate.send("messages", String.valueOf(id)).
+                thenAccept((result) -> {
+                    LOGGER.info("Sent message {} as saved to kafka", id);
+                });
+        return id;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<String> get(@PathVariable int id) throws InterruptedException {
-        return getMessage(() -> template.queryForObject("select value from message where id=?", String.class, id));
-    }
-
-//    @GetMapping("/random")
-//    public ResponseEntity<String> get() {
-//        return getMessage(() -> template.queryForObject("select value from message tablesample BERNOULLI (1) limit 1", String.class));
-//    }
-
-    private ResponseEntity<String> getMessage(Supplier<String> sup) throws InterruptedException {
         try {
-            if (rateLimiter.tryConsume(1, Duration.ofSeconds(60))) {
-                var message = sup.get();
-                return new ResponseEntity<>(message, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(null, HttpStatus.TOO_MANY_REQUESTS);
-            }
+            return new ResponseEntity<>(service.get(id), HttpStatus.OK);
         } catch (EmptyResultDataAccessException empty) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        } catch (MessagesService.RateLimitReachedException e) {
+            return new ResponseEntity<>(null, HttpStatus.TOO_MANY_REQUESTS);
         }
     }
 

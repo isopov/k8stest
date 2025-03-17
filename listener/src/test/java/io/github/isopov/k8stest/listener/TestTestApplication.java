@@ -1,4 +1,4 @@
-package io.github.isopov.k8stest.api;
+package io.github.isopov.k8stest.listener;
 
 import org.springframework.boot.SpringApplication;
 import io.github.isopov.k8stest.tests.TestContainersConfiguration;

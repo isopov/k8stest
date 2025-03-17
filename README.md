@@ -33,13 +33,9 @@ Install redis
 ```
 helm install --namespace=redis --create-namespace redis bitnami/redis --set auth.password=k8stest
 ```
-Install kafka
+Install kafka ({} are for array in auth parameters)
 ```
-helm install --namespace kafka --create-namespace kafka bitnami/kafka
-```
-Get kafka password
-```
-kubectl get secret kafka-user-passwords --namespace kafka -o jsonpath='{.data.client-passwords}' | base64 -d | cut -d , -f 1
+helm install --namespace kafka --create-namespace kafka bitnami/kafka --set "sasl.client.users={k8stest}" --set "sasl.client.passwords={k8stest}"
 ```
 Build this sample app and upload to local kind cluster
 ```

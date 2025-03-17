@@ -7,10 +7,7 @@
         <artifactId>k8stest-parent</artifactId>
         <version>0.1.6</version>
     </parent>
-    <artifactId>k8stest-api</artifactId>
-    <properties>
-        <bucket4j.version>8.14.0</bucket4j.version>
-    </properties>
+    <artifactId>k8stest-listener</artifactId>
     <dependencies>
         <dependency>
             <groupId>io.github.isopov.k8stest</groupId>

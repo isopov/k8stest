@@ -3,25 +3,25 @@ kind: Deployment
 metadata:
   creationTimestamp: null
   labels:
-    app: k8stest-api
-  name: k8stest-api
+    app: k8stest-listener
+  name: k8stest-listener
   namespace: k8stest
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: k8stest-api
+      app: k8stest-listener
   strategy: {}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: k8stest-api
+        app: k8stest-listener
     spec:
       containers:
-      - image: k8stest-api:0.1.6
+      - image: k8stest-listener:0.1.6
         imagePullPolicy: Never
-        name: k8stest-api
+        name: k8stest-listener
         resources:
           limits:
             cpu: 2000m
