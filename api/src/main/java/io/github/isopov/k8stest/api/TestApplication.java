@@ -1,17 +1,20 @@
 package io.github.isopov.k8stest.api;
 
 import io.github.isopov.k8stest.core.MessagesService;
+import io.github.isopov.k8stest.grpccore.FactorialRequest;
+import io.github.isopov.k8stest.grpccore.FactorialsGrpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.grpc.client.GrpcChannelFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
 import java.util.concurrent.ThreadLocalRandom;
 
 @SpringBootApplication(scanBasePackages = "io.github.isopov.k8stest")
@@ -19,6 +22,15 @@ public class TestApplication {
     public static void main(String[] args) {
         SpringApplication.run(TestApplication.class, args);
     }
+
+    @Bean
+    FactorialsGrpc.FactorialsBlockingStub stub(GrpcChannelFactory channels) {
+        return FactorialsGrpc.newBlockingStub(
+                //simple messages channel defined in properties does not work - why?
+                channels.createChannel("k8stest-service.k8stest.svc.cluster.local:8080")
+        );
+    }
+
 }
 
 @RestController
@@ -64,13 +76,16 @@ class MessagesController {
 @RestController
 @RequestMapping("/load")
 class LoadController {
+    private final FactorialsGrpc.FactorialsBlockingStub factorials;
+
+    LoadController(FactorialsGrpc.FactorialsBlockingStub factorials) {
+        this.factorials = factorials;
+    }
+
+
     @GetMapping("/factorial/{num}")
-    public Double burn(@PathVariable int num) {
-        var result = BigInteger.ONE;
-        for (int i = 1; i <= num; i++) {
-            result = result.multiply(BigInteger.valueOf(i));
-        }
-        return result.doubleValue();
+    public Double factorial(@PathVariable int num) {
+        return factorials.compute(FactorialRequest.newBuilder().setValue(num).build()).getValue();
     }
 
     @GetMapping("/allocate/{mbs}")

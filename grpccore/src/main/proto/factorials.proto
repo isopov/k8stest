@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.github.isopov.k8stest.grpccore";
+option java_outer_classname = "FactorialsProto";
+
+service Factorials {
+    rpc Compute (FactorialRequest) returns (FactorialReply) {
+    }
+}
+
+message FactorialRequest {
+    int32 value = 1;
+}
+
+message FactorialReply {
+    double value = 1;
+}
+
+

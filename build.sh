@@ -10,3 +10,4 @@ VERSION=$(./mvnw -q \
 
 kind load docker-image k8stest-api:$VERSION
 kind load docker-image k8stest-listener:$VERSION
+kind load docker-image k8stest-service:$VERSION
