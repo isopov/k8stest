@@ -2,5 +2,15 @@ apiVersion: v2
 name: k8stest
 description: Isopovs test of k8s with helm
 type: application
-version: 0.1.8
-appVersion: "0.1.8"
+version: 0.1.10
+appVersion: "0.1.10"
+dependencies:
+  - name: postgresql
+    repository: https://charts.bitnami.com/bitnami
+    version: 16.6.6
+  - name: redis
+    repository: https://charts.bitnami.com/bitnami
+    version: 20.13.2
+  - name: kafka
+    repository: https://charts.bitnami.com/bitnami
+    version: 32.2.1

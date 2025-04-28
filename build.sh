@@ -1,6 +1,7 @@
 #!/bin/bash -e
 
-./mvnw clean package spring-boot:build-image -Pnative
+#./mvnw clean package spring-boot:build-image -Pnative
+./mvnw clean package spring-boot:build-image
 
 VERSION=$(./mvnw -q \
     -Dexec.executable=echo \

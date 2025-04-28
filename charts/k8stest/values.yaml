@@ -1,0 +1,15 @@
+postgresql:
+  auth:
+    username: k8stest
+    password: k8stest
+    database: k8stest
+redis:
+  auth:
+    password: k8stest
+kafka:
+  sasl:
+    client:
+      users:
+        - k8stest
+      passwords:
+        - k8stest
