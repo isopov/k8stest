@@ -1,6 +1,8 @@
-Create local k8s cluster with kind
+Create local k8s cluster with kind (based on https://medium.com/@tylerauerbeck/metallb-and-kind-loads-balanced-locally-1992d60111d8)
 ```
-kind create cluster
+kind create cluster --config kind-config.yaml
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.19/config/manifests/metallb-native.yaml
+kubectl apply -f metallb-config.yaml
 ```
 
 Install metrics-server to it (without it HPA will not work)
@@ -20,16 +22,18 @@ Deploy to k8s cluster (postgresql, kafka, redis will be installed as held deps)
 helm upgrade --dependency-update --install --create-namespace --namespace k8stest k8stest charts/k8stest
 ```
 
-Get local ip of the k8s node. Access this app via it http://172.18.0.2:30080/load/factorial/10
+Check IP metallb given to this app loadbalancer
 ```
-docker inspect kind-control-plane | grep IPAddress
+$ kubectl get services -n k8stest
 ```
+Access API with something like http://172.18.255.1:8080/load/factorial/5
 
 Install prom,am,grafana to k8s
 ```
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo add stable https://charts.helm.sh/stable
 helm repo update
-kubectl create namespace monitoring
-helm install kind-prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --set prometheus.service.nodePort=30000 --set prometheus.service.type=NodePort --set grafana.service.nodePort=31000 --set grafana.service.type=NodePort --set alertmanager.service.nodePort=32000 --set alertmanager.service.type=NodePort --set prometheus-node-exporter.service.nodePort=32001 --set prometheus-node-exporter.service.type=NodePort
+helm install kind-prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace --set prometheus.service.type=LoadBalancer --set grafana.service.type=LoadBalancer --set alertmanager.service.type=LoadBalancer --set prometheus-node-exporter.service.type=LoadBalancer
+kubectl get services -n monitoring
 ```
+Access grafana with something like http://172.18.255.2/
