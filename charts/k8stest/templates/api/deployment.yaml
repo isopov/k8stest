@@ -29,4 +29,15 @@ spec:
           requests:
             cpu: 200m
             memory: 2Gi
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 9090
+        volumeMounts:
+          - name: config-volume
+            mountPath: /workspace/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: api-configmap
 status: {}

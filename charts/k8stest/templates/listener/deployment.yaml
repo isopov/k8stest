@@ -29,4 +29,11 @@ spec:
           requests:
             cpu: 200m
             memory: 2Gi
+        volumeMounts:
+          - name: config-volume
+            mountPath: /workspace/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: listener-configmap
 status: {}
