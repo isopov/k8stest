@@ -1,7 +1,7 @@
 Create local k8s cluster with kind (based on https://medium.com/@tylerauerbeck/metallb-and-kind-loads-balanced-locally-1992d60111d8)
 ```
 kind create cluster --config kind-config.yaml
-kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.19/config/manifests/metallb-native.yaml
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.9/config/manifests/metallb-native.yaml
 kubectl apply -f metallb-config.yaml
 ```
 
@@ -33,7 +33,7 @@ Install prom,am,grafana to k8s
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo add stable https://charts.helm.sh/stable
 helm repo update
-helm install kind-prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace --set prometheus.service.type=LoadBalancer --set grafana.service.type=LoadBalancer --set alertmanager.service.type=LoadBalancer --set prometheus-node-exporter.service.type=LoadBalancer
+helm install kind-prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace -f prom-stack-values.yaml
 kubectl get services -n monitoring
 ```
 Access grafana with something like http://172.18.255.2/

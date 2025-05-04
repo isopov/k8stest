@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: k8stest-monitor
+spec:
+  selector:
+    matchLabels:
+      monitored: foobar
+  namespaceSelector:
+    matchNames:
+      - k8stest
+  podMetricsEndpoints:
+    - port: metrics
+      path: /actuator/prometheus

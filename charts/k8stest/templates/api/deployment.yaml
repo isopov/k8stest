@@ -17,10 +17,13 @@ spec:
       creationTimestamp: null
       labels:
         app: k8stest-api
+        monitored: foobar
     spec:
       containers:
       - image: k8stest-api:0.1.11
         imagePullPolicy: Never
+#      for microk8s cluster described in homelablog.md
+#      - image: 192.168.1.101:32000/k8stest-api:0.1.11
         name: k8stest-api
         resources:
           limits:
@@ -36,6 +39,10 @@ spec:
         volumeMounts:
           - name: config-volume
             mountPath: /workspace/config
+        ports:
+          - containerPort: 9090
+            name: metrics
+            protocol: TCP
       volumes:
         - name: config-volume
           configMap:
