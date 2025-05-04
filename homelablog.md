@@ -12,6 +12,7 @@
 - `microk8s add-node` on homelab0
 - `microk8s join 192.168.1.100:25000/... -worker` on homelab1-2
 - `microk8s.config` on homelab0 to get kubeconfig for connecting to this k8s
+- `kubectl taint nodes --selector=node.kubernetes.io/microk8s-controlplane=microk8s-controlplane cp-node=true:PreferNoSchedule` to prefer not to use weak homelab0 control node
 ## metallb
 #### From 
 - https://microk8s.io/docs/addon-metallb 
