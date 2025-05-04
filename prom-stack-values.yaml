@@ -9,3 +9,6 @@ prometheus:
 grafana:
   service:
     type: LoadBalancer
+  sidecar:
+    dashboards:
+      enabled: true
