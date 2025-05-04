@@ -19,10 +19,10 @@ spec:
         app: k8stest-listener
     spec:
       containers:
-      - image: k8stest-listener:0.1.11
-        imagePullPolicy: Never
+#      - image: k8stest-listener:0.1.11
+#        imagePullPolicy: Never
 #      for microk8s cluster described in homelablog.md
-#      - image: 192.168.1.101:32000/k8stest-listener:0.1.11
+      - image: 192.168.1.100:32000/k8stest-listener:0.1.11
         name: k8stest-listener
         resources:
           limits:
